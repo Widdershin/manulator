@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe CalculationsController, type: :controller do
+describe CalculationsController, type: :controller do
   describe '#new' do
     it 'renders the new template with 200 OK' do
       get :new
@@ -11,16 +11,9 @@ RSpec.describe CalculationsController, type: :controller do
   end
 
   describe '#create' do
-    let(:requirements) do
-      {
-        white: 1,
-        black: 1,
-        red: 1,
-        green: 0,
-        blue: 0,
-        colorless: 0
-      }
-    end
+    let(:requirements) { { white: 1, black: 1, red: 1, green: 0, blue: 0, colorless: 0 } }
+
+    before { expect(CalculateManaBase).to receive(:new).and_return(-> { [] }) }
 
     it 'renders the show template with 200 Ok' do
       post :create, params: { mana_requirements: requirements, by_turn: 3 }

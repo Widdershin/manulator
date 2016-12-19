@@ -21,7 +21,7 @@ class MHD
   end
 
   def call(amounts_desired:, draws:)
-    raise "specify the amount desired for each type" unless amounts_desired.size == distribution.size
+    raise 'specify the amount desired for each type' unless amounts_desired.size == distribution.size
 
     number_of_type_to_number_desired = distribution.values.zip(amounts_desired)
 
