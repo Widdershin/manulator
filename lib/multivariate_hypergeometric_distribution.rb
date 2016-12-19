@@ -1,11 +1,10 @@
 require 'byebug'
 
 module Math
-  
   # https://rosettacode.org/wiki/Evaluate_binomial_coefficients#Ruby
   # binomial coefficient
   def self.bc(n, k)
-    pTop = (n-k+1 .. n).inject(1, &:*) 
+    pTop = (n-k+1 .. n).inject(1, &:*)
     pBottom = (2 .. k).inject(1, &:*)
     pTop / pBottom
   end
@@ -21,7 +20,7 @@ class MHD
     @population_size = distribution.values.inject(:+)
   end
 
-  def call(amounts_desired: amounts_desired, draws: draws)
+  def call(amounts_desired:, draws:)
     raise "specify the amount desired for each type" unless amounts_desired.size == distribution.size
 
     number_of_type_to_number_desired = distribution.values.zip(amounts_desired)
