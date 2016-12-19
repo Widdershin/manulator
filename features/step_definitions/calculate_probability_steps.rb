@@ -1,10 +1,14 @@
-When /^I enter "([^"]*)" "([^"]*)" by turn "([^"]*)" as my requirement$/ do |number, color, turn|
-  fill_in 'Number of sources', with: number
-  fill_in 'Colour of sources', with: color
-  fill_in 'By turn', with: turn
+When /^I enter my requirements$/ do
+  select 1, from: 'black'
+  select 1, from: 'green'
+  fill_in 'by_turn', with: 2
 end
 
-Then /^I see the three most optimised configurations$/ do
+When /^I click calculate$/ do
+  click_link_or_button 'Calculate'
+end
+
+Then /^I see the ten most optimised configurations$/ do
   expect(page).to have_content
   'The following mana configurations are the most optimal for your requirements:'
 end
