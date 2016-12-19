@@ -3,5 +3,22 @@
 
   <p>You asked for <%= @requirement_description %> by turn <%= @turn %></p>
 
-  <%= render partial: 'mana_base', collection: @mana_bases %>
+  <p>The following mana configurations are the most optimal for your requirements:</p>
+
+  <table class="ui celled table">
+    <thead>
+      <tr>
+        <th>White</th>
+        <th>Blue</th>
+        <th>Black</th>
+        <th>Red</th>
+        <th>Green</th>
+        <th>Colorless</th>
+        <th>Probability</th>
+      </tr>
+    </thead>
+    <tbody>
+      <%= render partial: 'mana_base', collection: @mana_bases %>
+    </tbody>
+  </table>
 </div>
