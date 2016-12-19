@@ -3,36 +3,33 @@ require 'spec_helper'
 describe CalculateManaBase do
   let(:service) { described_class.new(mana_desired, by_turn) }
   let(:result) { service.call }
+  let(:by_turn) { 0 }
 
-  context 'with three colours' do
-    let(:mana_desired) { { red: 2, blue: 1, white: 1 } }
+  context 'with 1 mana desired for each of 2 colors' do
+    let(:mana_desired) { { blue: 1, white: 1 } }
 
-    context 'with 7 draws' do
-      let(:by_turn) { 0 }
+    it 'returns the most optimal manabase as an even split of the 2 colors' do
+      expect(result.first[:blue]).to eq(CalculateManaBase::MANA_SOURCES / 2)
+      expect(result.first[:white]).to eq(CalculateManaBase::MANA_SOURCES / 2)
+      # expect(result).to eq([])
+    end
+  end
 
-      it 'returns the correct results, in order of most probable first' do
-        expect(result.count).to eq(15)
+  context 'with 1 mana desired for each of 3 colors' do
+    let(:mana_desired) { { blue: 1, white: 1, red: 1 } }
 
-        expect(result).to eq(
-          [
-            { red: 12, blue: 6, white: 6, probability: 4.3926 },
-            { red: 13, blue: 6, white: 5, probability: 4.3261 },
-            { red: 13, blue: 5, white: 6, probability: 4.3261 },
-            { red: 11, blue: 6, white: 7, probability: 4.2706 },
-            { red: 12, blue: 7, white: 5, probability: 4.2706 },
-            { red: 11, blue: 7, white: 6, probability: 4.2706 },
-            { red: 12, blue: 5, white: 7, probability: 4.2706 },
-            { red: 14, blue: 5, white: 5, probability: 4.2059 },
-            { red: 10, blue: 7, white: 7, probability: 4.0765 },
-            { red: 11, blue: 8, white: 5, probability: 4.0672 },
-            { red: 11, blue: 5, white: 8, probability: 4.0672 },
-            { red: 13, blue: 7, white: 4, probability: 4.0377 },
-            { red: 14, blue: 4, white: 6, probability: 4.0377 },
-            { red: 14, blue: 6, white: 4, probability: 4.0377 },
-            { red: 13, blue: 4, white: 7, probability: 4.0377 }
-          ]
-        )
-      end
+    it 'returns the most optimal manabase as an even split of the 2 colors' do
+      expect(result.first[:blue]).to eq(CalculateManaBase::MANA_SOURCES / 3)
+      expect(result.first[:white]).to eq(CalculateManaBase::MANA_SOURCES / 3)
+      expect(result.first[:red]).to eq(CalculateManaBase::MANA_SOURCES / 3)
+    end
+  end
+
+  context 'when the number of turns is increased' do
+    let(:mana_desired) { { blue: 1, white: 1 } }
+
+    it 'returns a higher probability to draw the required mana' do
+      expect(described_class.new(mana_desired, 0).call.first[:probability]).to be < described_class.new(mana_desired, 1).call.first[:probability]
     end
   end
 end
