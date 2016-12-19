@@ -2,11 +2,9 @@
   <h1 class='ui header'>Mana Probability Calculator</h1>
 
   <%= form_tag '/calculations', class: 'ui large form' do %>
-    <%= label_tag 'number_of_sources_required' %>
-    <%= text_field_tag 'number_of_sources_required' %>
-
-    <%= label_tag 'color_of_sources_required' %>
-    <%= text_field_tag 'color_of_sources_required' %>
+    <% @mana_sources.each do |source| %>
+      I want <%= select_tag(source, options_for_select(@amounts, 0)) %><%= source.titleize %><br><br>
+    <% end %>
 
     <%= label_tag 'by_turn' %>
     <%= text_field_tag 'by_turn' %>

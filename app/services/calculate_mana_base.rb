@@ -7,10 +7,10 @@ class CalculateManaBase
   MANA_SOURCES = 24
   CONFIDENCE = 4 # percent
 
-  def initialize(mana_desired, draws)
+  def initialize(mana_desired, by_turn)
     @colors_desired = mana_desired.keys
     @mana_desired = mana_desired
-    @draws = draws
+    @draws = by_turn.to_i + 7
     @successes = []
   end
 
@@ -35,7 +35,7 @@ class CalculateManaBase
   end
 
   def mana_sources_desired
-    mana_desired.values
+    mana_desired.values.map(&:to_i)
   end
 
   def non_mana_sources_desired
@@ -51,7 +51,8 @@ class CalculateManaBase
         blue: combination.count(:blue),
         black: combination.count(:black),
         red: combination.count(:red),
-        green: combination.count(:green)
+        green: combination.count(:green),
+        colorless: combination.count(:colorless)
       }.delete_if { |key, _value| colors_desired.exclude?(key) }
     end
   end

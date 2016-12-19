@@ -1,0 +1,7 @@
+<div class='ui main text container' id='calculation-form'>
+  <h1 class='ui header'>Manabases calculated</h1>
+
+  <p>You asked for <%= @requirement_description %> by turn <%= @turn %></p>
+
+  <%= render partial: 'mana_base', collection: @mana_bases %>
+</div>
