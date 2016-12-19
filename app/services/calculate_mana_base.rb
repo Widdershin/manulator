@@ -1,9 +1,9 @@
 class CalculateManaBase
   attr_reader :color_distribution, :amounts_desired, :successes, :draws
 
-CARDS_IN_DECK = 60
-MANA_SOURCES = 24
-CONFIDENCE = 4 # percent
+  CARDS_IN_DECK = 60
+  MANA_SOURCES = 24
+  CONFIDENCE = 4 # percent
 
   def intialize(colors_desired, amounts_desired, draws)
     @colors_desired = colors_desired
@@ -48,7 +48,7 @@ CONFIDENCE = 4 # percent
 
     combinations.map do |combination|
       { 
-        white: combination.count("white")
+        white: combination.count("white"),
         blue: combination.count("blue"),
         black: combination.count("black"),
         red: combination.count("red"),
@@ -57,3 +57,9 @@ CONFIDENCE = 4 # percent
     end
   end
 end
+
+colors_desired = ["blue", "red", "white"]
+amounts_desired = {red: 2, blue: 1, white: 1}
+draws = 10
+CalculateManaBase.new(colors_desired, amounts_desired, draws).call
+
