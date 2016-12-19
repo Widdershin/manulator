@@ -1,0 +1,16 @@
+<div class='ui main text container' id='calculation-form'>
+  <h1 class='ui header'>Mana Probability Calculator</h1>
+
+  <%= form_tag '/calculations', class: 'ui large form' do %>
+    <%= label_tag 'number_of_sources_required' %>
+    <%= text_field_tag 'number_of_sources_required' %>
+
+    <%= label_tag 'color_of_sources_required' %>
+    <%= text_field_tag 'color_of_sources_required' %>
+
+    <%= label_tag 'by_turn' %>
+    <%= text_field_tag 'by_turn' %>
+
+    <%= submit_tag 'Calculate', class: 'ui fluid large teal submit button' %>
+  <% end %>
+</div>
