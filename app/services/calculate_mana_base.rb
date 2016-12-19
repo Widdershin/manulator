@@ -1,27 +1,26 @@
+require 'multivariate_hypergeometric_distribution.rb'
+
 class CalculateManaBase
-  attr_reader :color_distribution, :amounts_desired, :successes, :draws
+  attr_reader :colors_desired, :mana_desired, :successes, :draws
 
   CARDS_IN_DECK = 60
   MANA_SOURCES = 24
   CONFIDENCE = 4 # percent
 
-  def intialize(colors_desired, amounts_desired, draws)
-    @colors_desired = colors_desired
-    @amounts_desired = amounts_desired
-    @draws = draws
+  def initialize(mana_desired, by_turn)
+    @colors_desired = mana_desired.keys
+    @mana_desired = mana_desired
+    @draws = by_turn.to_i + 7
     @successes = []
   end
 
   def call
     mana_base_combinations.each do |combination|
-      card_distribution = {
-        red_sources: combination[:red],
-        blue_sources: combination[:blue],
-        white_sources: combination[:white],
-        non_mana_sources: CARDS_IN_DECK - MANA_SOURCES
-      }
+      card_distribution = combination.merge({
+          non_mana_sources: CARDS_IN_DECK - MANA_SOURCES
+      })
 
-      mhd = MHD.new(card_distribution: card_distribution)
+      mhd = MHD.new(distribution: card_distribution)
 
       probability = mhd.call(amounts_desired: amounts_desired, draws: draws) * 100
 
@@ -32,11 +31,11 @@ class CalculateManaBase
   end
 
   def amounts_desired
-    mana_sources_desired + non_mana_sources_desired
+    mana_sources_desired << non_mana_sources_desired
   end
 
   def mana_sources_desired
-    amounts_desired.values
+    mana_desired.values.map(&:to_i)
   end
 
   def non_mana_sources_desired
@@ -44,21 +43,17 @@ class CalculateManaBase
   end
 
   def mana_base_combinations
-    combinations = colors_desired.repeated_combinations(MANA_SOURCES)
+    combinations = colors_desired.repeated_combination(MANA_SOURCES)
 
     combinations.map do |combination|
-      { 
-        white: combination.count("white"),
-        blue: combination.count("blue"),
-        black: combination.count("black"),
-        red: combination.count("red"),
-        green: combination.count("green"),
-      }.delete_if { |_, value| value.zero? }
+      {
+        white: combination.count(:white),
+        blue: combination.count(:blue),
+        black: combination.count(:black),
+        red: combination.count(:red),
+        green: combination.count(:green),
+        colorless: combination.count(:colorless)
+      }.delete_if { |key, _value| colors_desired.exclude?(key) }
     end
   end
 end
-
-colors_desired = ["blue", "red", "white"]
-amounts_desired = {red: 2, blue: 1, white: 1}
-draws = 10
-CalculateManaBase.new(colors_desired, amounts_desired, draws).call
