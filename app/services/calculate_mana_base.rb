@@ -3,6 +3,7 @@ require 'multivariate_hypergeometric_distribution.rb'
 class CalculateManaBase
   attr_reader :colors_desired, :mana_desired, :draws
 
+  COLORS = [:white, :blue, :black, :red, :green, :colorless]
   CARDS_IN_DECK = 60
   MANA_SOURCES = 24
   CONFIDENCE = 4 # percent
@@ -10,7 +11,7 @@ class CalculateManaBase
 
   def initialize(mana_desired, by_turn)
     @colors_desired = mana_desired.keys
-    @mana_desired = mana_desired
+    @mana_desired = mana_desired.sort_by { |color, _v| COLORS.index(color) }.to_h
     @draws = by_turn.to_i + CARDS_IN_OPENING_HAND
   end
 
@@ -26,9 +27,29 @@ class CalculateManaBase
 
       mhd = MHD.new(distribution: card_distribution)
 
-      probability = mhd.call(amounts_desired: amounts_desired, draws: draws) * 100
+      probability = possible_hands.sum do |hand|
+        amounts_desired = hasherizer(hand).values
+        prob = mhd.call(amounts_desired: amounts_desired, draws: draws)
+        p "probability: #{prob}"
+        p "hand: #{hand}"
+        p "hasherized values: #{amounts_desired}"
+        prob
+      end * 100
 
       successes << combination.merge(probability: probability.round(4)) if probability > CONFIDENCE
+    end
+  end
+
+  def possible_hands
+    (colors_desired + [:non_mana_sources]).repeated_combination(draws).reject { |hand| satisfies_requirements?(hand) }
+  end
+
+  def satisfies_requirements?(hand)
+    # this doesn't reject hands that are impossible given a card distribution
+    # for example, we want blue, red and white mana, and it gives us a possible hand of 
+    # 2 white, 1 red, and 1 blue, but our mana base only has 1 plains in it. This hand needs to be rejected
+    mana_desired.all? do |color, amount|
+      amount >= hand.count(color)
     end
   end
 
@@ -40,6 +61,12 @@ class CalculateManaBase
 
       result
     end
+  end
+
+  def hasherizer(array)
+    colors_desired.push(:non_mana_sources).map.with_object({}) do |color, hash|
+      hash[color] = array.count(color)
+    end.sort_by { |color, _v| COLORS.index(color) || COLORS.length }.to_h
   end
 
   def amounts_desired
