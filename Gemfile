@@ -25,6 +25,7 @@ group :development, :test do
   gem 'byebug', platform: :mri
   gem 'rack-mini-profiler'
   gem 'rspec-rails', '~> 3.5'
+  gem 'table_display'
 end
 
 group :development do
