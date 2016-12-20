@@ -28,7 +28,7 @@ class CalculateManaBase
       mhd = MHD.new(distribution: card_distribution)
 
       probability = possible_hands_for_mana_base(card_distribution).sum do |hand|
-        mhd.call(amounts_desired: hasherize(hand).values, draws: draws)
+        mhd.call(amounts_desired: hand.values, draws: draws)
       end * 100
 
       successes << combination.merge(probability: probability.round(4)) if probability > CONFIDENCE
@@ -37,14 +37,14 @@ class CalculateManaBase
 
   def possible_hands_for_mana_base(card_distribution)
     hands_with_required_mana_sources.select do |hand|
-      hasherize(hand).all? do |color, count|
+      hand.all? do |color, count|
         card_distribution[color] >= count
       end
     end
   end
 
   def hands_with_required_mana_sources
-    @hands ||= possible_hands.select { |hand| satisfies_mana_requirements?(hand) }
+    @hands ||= possible_hands.map { |hand| hasherize(hand) if satisfies_mana_requirements?(hand) }.compact
   end
 
   def possible_hands
