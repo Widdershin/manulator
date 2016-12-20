@@ -37,21 +37,21 @@ class CalculateManaBase
         available_cards = draws
         active_distribution = hasherize(hand)
         
-        mana_constraints.each do |constraint|
-          # are we using constraint.turn?
-          current_distribution = MHD.new(distribution: active_distribution)
-          amounts_desired = amounts_desired_for(constraint.count, constraint.color)
+        # mana_constraints.each do |constraint|
+        #   # are we using constraint.turn?
+        #   current_distribution = MHD.new(distribution: active_distribution)
+        #   amounts_desired = amounts_desired_for(constraint.count, constraint.color)
 
-          # p_constr = current_distribution.call(amounts_desired: amounts_desired, available_cards_for_constraint(turn, available_cards)) # available cards for a constraint will move...
-          p_constr = current_distribution.call(amounts_desired: amounts_desired, draws: 1) # available cards for a constraint will move...
+        #   # p_constr = current_distribution.call(amounts_desired: amounts_desired, available_cards_for_constraint(turn, available_cards)) # available cards for a constraint will move...
+        #   p_constr = current_distribution.call(amounts_desired: amounts_desired, draws: 1) # available cards for a constraint will move...
 
-          raise "that shit cray" if p_constr.zero?
+        #   raise "that shit cray" if p_constr.zero?
 
-          constrained_probs << p_constr
-          active_distribution = card_types.zip(active_distribution.values.zip(amounts_desired).map { |a, b| a - b }).to_h
+        #   constrained_probs << p_constr
+        #   active_distribution = card_types.zip(active_distribution.values.zip(amounts_desired).map { |a, b| a - b }).to_h
 
-          available_cards -= constraint.count
-        end
+        #   available_cards -= constraint.count
+        # end
 
         constrained_probs.reduce(:*)
       end * 100
