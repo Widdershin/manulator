@@ -1,23 +1,13 @@
 require 'byebug'
 
-module Math
-  # https://rosettacode.org/wiki/Evaluate_binomial_coefficients#Ruby
-  # binomial coefficient
-  def self.bc(n, k)
-    pTop = (n-k+1 .. n).inject(1, &:*)
-    pBottom = (2 .. k).inject(1, &:*)
-    pTop / pBottom
-  end
-end
-
 class MHD
-  include Math
+  include Distribution::MathExtension
 
   attr_reader :population_size, :distribution
 
   def initialize(distribution: nil)
     @distribution = distribution
-    @population_size = distribution.values.inject(:+)
+    @population_size = distribution.values.sum
   end
 
   def call(amounts_desired:, draws:)
@@ -26,10 +16,10 @@ class MHD
     number_of_type_to_number_desired = distribution.values.zip(amounts_desired)
 
     binomial_coefficients = number_of_type_to_number_desired.map do |number_of_type, number_desired|
-      Math.bc(number_of_type, number_desired)
+      binomial_coefficient(number_of_type, number_desired)
     end
 
-    binomial_coefficients.inject(:*).to_f / Math.bc(population_size, draws).to_f
+    binomial_coefficients.inject(:*).to_f / binomial_coefficient(population_size, draws).to_f
   end
 end
 
@@ -37,7 +27,7 @@ end
 # successes = []
 
 # combinations = combinations.map do |combination|
-#   { 
+#   {
 #     blue: combination.count("blue"),
 #     red: combination.count("red"),
 #     white: combination.count("white")
