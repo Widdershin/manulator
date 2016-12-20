@@ -3,14 +3,14 @@ require 'multivariate_hypergeometric_distribution.rb'
 class CalculateManaBase
   attr_reader :colors_desired, :mana_desired, :draws
 
-  COLORS = [:white, :blue, :black, :red, :green, :colorless]
+  COLORS = %i(white blue black red green colorless).freeze
   CARDS_IN_DECK = 60
   MANA_SOURCES = 24
   CONFIDENCE = 10 # percent
   CARDS_IN_OPENING_HAND = 7
 
   def initialize(mana_desired, by_turn)
-    @colors_desired = mana_desired.select { |color, count| count.nonzero? }.keys
+    @colors_desired = mana_desired.select { |_color, count| count.nonzero? }.keys
     @mana_desired = mana_desired.sort_by { |color, _count| COLORS.index(color) }.to_h
     @draws = by_turn + CARDS_IN_OPENING_HAND
   end
@@ -28,10 +28,8 @@ class CalculateManaBase
       mhd = MHD.new(distribution: card_distribution)
 
       probability = possible_hands_for_mana_base(card_distribution).sum do |hand|
-        mhd.call(amounts_desired: hasherizer(hand).values, draws: draws)
+        mhd.call(amounts_desired: hasherize(hand).values, draws: draws)
       end * 100
-
-      # byebug if card_distribution[:white] == 12
 
       successes << combination.merge(probability: probability.round(4)) if probability > CONFIDENCE
     end
@@ -39,7 +37,7 @@ class CalculateManaBase
 
   def possible_hands_for_mana_base(card_distribution)
     hands_with_required_mana_sources.select do |hand|
-      hasherizer(hand).all? do |color, count|
+      hasherize(hand).all? do |color, count|
         card_distribution[color] >= count
       end
     end
@@ -54,12 +52,7 @@ class CalculateManaBase
   end
 
   def satisfies_mana_requirements?(hand)
-    # this doesn't reject hands that are impossible given a card distribution
-    # for example, we want blue, red and white mana, and it gives us a possible hand of
-    # 2 white, 1 red, and 1 blue, but our mana base only has 1 plains in it. This hand needs to be rejected
-    mana_desired.all? do |color, amount|
-      hand.count(color) >= amount
-    end
+    mana_desired.all? { |color, amount| hand.count(color) >= amount }
   end
 
   def mana_base_combinations
@@ -72,7 +65,7 @@ class CalculateManaBase
     end
   end
 
-  def hasherizer(array)
+  def hasherize(array)
     (colors_desired + [:non_mana_sources]).map.with_object({}) do |color, hash|
       hash[color] = array.count(color)
     end.sort_by { |color, _v| COLORS.index(color) || COLORS.length }.to_h
