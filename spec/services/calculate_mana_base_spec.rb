@@ -1,14 +1,20 @@
 require 'spec_helper'
 
 describe CalculateManaBase do
-  let(:service) { described_class.new(mana_desired, by_turn) }
+  let(:service) { described_class.new(mana_desired) }
   let(:result) { service.call }
   let(:by_turn) { 0 }
 
   context 'with 1 mana desired for each of 2 colors' do
-    let(:mana_desired) { { blue: 1, white: 1 } }
+    let(:mana_desired) { 
+      {
+        blue: { count: 1, turn: 0 },
+        white: { count: 1, turn: 0 } 
+      } 
+    }
 
     it 'returns the most optimal manabase as an even split of the 2 colors' do
+      expect(result).to eq([])
       expect(result.first[:blue]).to eq(CalculateManaBase::MANA_SOURCES / 2)
       expect(result.first[:white]).to eq(CalculateManaBase::MANA_SOURCES / 2)
     end
