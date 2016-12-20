@@ -14,7 +14,6 @@ describe CalculateManaBase do
     }
 
     it 'returns the most optimal manabase as an even split of the 2 colors' do
-      expect(result).to eq([])
       expect(result.first[:blue]).to eq(CalculateManaBase::MANA_SOURCES / 2)
       expect(result.first[:white]).to eq(CalculateManaBase::MANA_SOURCES / 2)
     end
