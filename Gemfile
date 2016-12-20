@@ -21,12 +21,12 @@ gem 'uglifier', '>= 1.3.0'
 
 group :development, :test do
   gem 'byebug', platform: :mri
+  gem 'rack-mini-profiler'
   gem 'rspec-rails', '~> 3.5'
 end
 
 group :development do
   gem 'listen', '~> 3.0.5'
-  gem 'rack-mini-profiler'
   gem 'spring'
   gem 'spring-watcher-listen', '~> 2.0.0'
   gem 'web-console'
