@@ -10,9 +10,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 20161220013145) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "mana_sources", force: :cascade do |t|
+    t.string   "name",                       null: false
+    t.boolean  "nonbasic",   default: false, null: false
+    t.boolean  "white",      default: false, null: false
+    t.boolean  "blue",       default: false, null: false
+    t.boolean  "black",      default: false, null: false
+    t.boolean  "red",        default: false, null: false
+    t.boolean  "green",      default: false, null: false
+    t.boolean  "colorless",  default: false, null: false
+    t.boolean  "etb_tapped", default: false, null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
+  end
 
 end
