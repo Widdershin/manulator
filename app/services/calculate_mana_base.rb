@@ -1,18 +1,18 @@
 require 'multivariate_hypergeometric_distribution.rb'
 
 class CalculateManaBase
-  attr_reader :colors_desired, :mana_desired, :draws
+  attr_reader :mana_constraints
 
   COLORS = %i(white blue black red green colorless).freeze
   CARDS_IN_DECK = 60
   MANA_SOURCES = 24
-  CONFIDENCE = 10 # percent
+  CONFIDENCE = 0 # percent
   CARDS_IN_OPENING_HAND = 7
 
-  def initialize(mana_desired, by_turn)
-    @colors_desired = mana_desired.select { |_color, count| count.nonzero? }.keys
-    @mana_desired = mana_desired.sort_by { |color, _count| COLORS.index(color) }.to_h
-    @draws = by_turn + CARDS_IN_OPENING_HAND
+  ManaConstraint = Struct.new(:color, :count, :turn)
+
+  def initialize(mana_constraints)
+    @mana_constraints = mana_constraints
   end
 
   def call
@@ -28,11 +28,25 @@ class CalculateManaBase
       mhd = MHD.new(distribution: card_distribution)
 
       probability = possible_hands_for_mana_base(card_distribution).sum do |hand|
-        mhd.call(amounts_desired: hand.values, draws: draws)
+        p_hand = mhd.call(amounts_desired: hasherize(hand).values, draws: draws)
       end * 100
 
       successes << combination.merge(probability: probability.round(4)) if probability > CONFIDENCE
     end
+  end
+
+  def mana_constraints
+    @mana ||= @mana_constraints
+      .map { |color, details| ManaConstraint.new(color, details[:count], details[:turn]) }
+      .sort_by { |constraint| COLORS.index(constraint.color) }
+  end
+
+  def colors_desired
+    @colors_desired ||= mana_constraints.map { |constraint| constraint.color if constraint.count.nonzero? }.compact
+  end
+
+  def draws
+    @draws ||= mana_constraints.map { |constraint| constraint.turn + CARDS_IN_OPENING_HAND }.max
   end
 
   def possible_hands_for_mana_base(card_distribution)
@@ -48,11 +62,13 @@ class CalculateManaBase
   end
 
   def possible_hands
-    (colors_desired + [:non_mana_sources]).repeated_combination(draws)
+    card_types.repeated_combination(draws)
   end
 
   def satisfies_mana_requirements?(hand)
-    mana_desired.all? { |color, amount| hand.count(color) >= amount }
+    mana_constraints.all? do |constraint|
+      hand.count(constraint.color) >= constraint.count
+    end
   end
 
   def mana_base_combinations
@@ -66,20 +82,16 @@ class CalculateManaBase
   end
 
   def hasherize(array)
-    (colors_desired + [:non_mana_sources]).map.with_object({}) do |color, hash|
+    card_types.map.with_object({}) do |color, hash|
       hash[color] = array.count(color)
     end.sort_by { |color, _v| COLORS.index(color) || COLORS.length }.to_h
   end
 
-  def amounts_desired
-    mana_sources_desired << non_mana_sources_desired
+  def amounts_desired_for(count, color)
+    card_types.map { |mana_color| mana_color == color ? count : 0 }
   end
 
-  def mana_sources_desired
-    mana_desired.values.map(&:to_i)
-  end
-
-  def non_mana_sources_desired
-    draws - mana_sources_desired.sum
+  def card_types
+    (colors_desired + [:non_mana_sources])
   end
 end
