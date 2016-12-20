@@ -10,9 +10,9 @@ class CalculateManaBase
   CARDS_IN_OPENING_HAND = 7
 
   def initialize(mana_desired, by_turn)
-    @colors_desired = mana_desired.keys
-    @mana_desired = mana_desired.sort_by { |color, _v| COLORS.index(color) }.to_h
-    @draws = by_turn.to_i + CARDS_IN_OPENING_HAND
+    @colors_desired = mana_desired.select { |color, count| count.nonzero? }.keys
+    @mana_desired = mana_desired.sort_by { |color, _count| COLORS.index(color) }.to_h
+    @draws = by_turn + CARDS_IN_OPENING_HAND
   end
 
   def call
@@ -28,9 +28,7 @@ class CalculateManaBase
       mhd = MHD.new(distribution: card_distribution)
 
       probability = possible_hands_for_mana_base(card_distribution).sum do |hand|
-        amounts_desired = hasherizer(hand).values
-        prob = mhd.call(amounts_desired: amounts_desired, draws: draws)
-        prob
+        mhd.call(amounts_desired: hasherizer(hand).values, draws: draws)
       end * 100
 
       # byebug if card_distribution[:white] == 12
@@ -40,23 +38,27 @@ class CalculateManaBase
   end
 
   def possible_hands_for_mana_base(card_distribution)
-    possible_hands.select do |hand|
+    hands_with_required_mana_sources.select do |hand|
       hasherizer(hand).all? do |color, count|
         card_distribution[color] >= count
       end
     end
   end
 
-  def possible_hands
-    @hands ||= (colors_desired + [:non_mana_sources]).repeated_combination(draws).select { |hand| satisfies_requirements?(hand) }
+  def hands_with_required_mana_sources
+    @hands ||= possible_hands.select { |hand| satisfies_mana_requirements?(hand) }
   end
 
-  def satisfies_requirements?(hand)
+  def possible_hands
+    (colors_desired + [:non_mana_sources]).repeated_combination(draws)
+  end
+
+  def satisfies_mana_requirements?(hand)
     # this doesn't reject hands that are impossible given a card distribution
     # for example, we want blue, red and white mana, and it gives us a possible hand of
     # 2 white, 1 red, and 1 blue, but our mana base only has 1 plains in it. This hand needs to be rejected
     mana_desired.all? do |color, amount|
-      amount >= hand.count(color)
+      hand.count(color) >= amount
     end
   end
 
