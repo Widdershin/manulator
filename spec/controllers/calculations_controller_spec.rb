@@ -25,15 +25,17 @@ describe CalculationsController, type: :controller do
       }
     end
 
+    let(:lands_to_consider) { ["Spirebluff Canal"] }
+
     before do
       expect(CalculateManaBase)
         .to receive(:new)
-        .with(mana_constraints)
+        .with(mana_constraints, lands_to_consider)
         .and_return(-> { [] })
     end
 
     it 'renders the show template with 200 Ok' do
-      post :create, params: { calculations: constraints }
+      post :create, params: { calculations: constraints, non_basic_lands: ["Spirebluff Canal"] }
 
       expect(response).to have_http_status(:ok)
       expect(response).to render_template(:show)

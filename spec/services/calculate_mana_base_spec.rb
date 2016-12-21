@@ -12,6 +12,10 @@ describe CalculateManaBase do
     ManaSource.create!(white: false, blue: true, black: false, red: true, green: false, colorless: false, name: 'spirebluff_canal', basic: false)
   end
 
+  after do
+    ManaSource.destroy_all
+  end
+
   context 'with 1 mana desired for each of 2 colors' do
     let(:lands_to_consider) { ["plains", "island"] }
     let(:mana_desired) { 
