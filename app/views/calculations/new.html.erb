@@ -23,8 +23,8 @@
         <% @non_basic_lands.each.with_index do |land, index| %>
           <div class='left aligned column'>
             <div class='ui checkbox'>
-              <%= radio_button_tag "non_basic_land[#{index}]", land.name %>
-              <%= label_tag "non_basic_land[#{index}]", land.name %>
+              <%= check_box_tag "non_basic_lands[]", land.name %>
+              <%= label_tag "non_basic_lands[]", land.name %>
             </div>
           </div>
         <% end %>
