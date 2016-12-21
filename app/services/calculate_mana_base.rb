@@ -12,8 +12,9 @@ class CalculateManaBase
   ManaConstraint = Struct.new(:color, :count, :turn)
   NonSource = Struct.new(:white, :blue, :black, :red, :green, :colorless, :name, :basic)
 
-  def initialize(mana_constraints)
+  def initialize(mana_constraints, lands_to_consider)
     @mana_constraints = mana_constraints
+    @lands_to_consider = lands_to_consider
   end
 
   def call
@@ -73,7 +74,7 @@ class CalculateManaBase
   end
 
   def colors_to_sources
-    @colors_to_sources ||= colors_desired.flat_map { |color| ManaSource.where(color.to_sym => true) }.uniq.sort_by(&:name)
+    @colors_to_sources ||= colors_desired.flat_map { |color| ManaSource.where(name: @lands_to_consider) }.uniq.sort_by(&:name)
   end
 
   def mana_base_combinations
@@ -91,14 +92,13 @@ class CalculateManaBase
   end
 
   def too_many_non_basics?(mana_base)
-    mana_base = hasherize(mana_base)
-    too_many = mana_base.any? { |source, count| !source.basic && count > 4 }
+    mana_base.any? { |source, count| !source.basic && mana_base.count(source) > 4 }
   end
 
   def hasherize(array)
     card_types.map.with_object({}) do |source, hash|
       hash[source] = array.count(source)
-    end #.sort_by { |source, _v| COLORS.index(color) || COLORS.length }.to_h
+    end
   end
 
   def amounts_desired_for(count, color)
