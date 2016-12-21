@@ -2,28 +2,38 @@ class CalculationsController < ApplicationController
   COLORS = %w(white blue black red green colorless).freeze
 
   def new
-    @mana_sources = COLORS
+    @colors = COLORS
     @amounts = (0..10).to_a
   end
 
   def create
-    @turn = params[:by_turn].to_i
-    @requirement_description = requirement_params.select { |_k, v| v != '0' }
-    @mana_bases = CalculateManaBase.new(requirement_params, @turn).call.first(10)
+    @mana_bases = CalculateManaBase.new(mana_constraints).call.first(10)
 
     render :show
   end
 
   private
 
-  def requirement_params
+  def mana_constraints
+    calculation_params.map do |constraint_params|
+      constraint_params_to_mana_constraint(constraint_params)
+    end.reduce({}, :merge)
+  end
+
+  def calculation_params
+    params['calculations'].delete_if do |key, _value|
+      key == 'constraint_X'
+    end
+  end
+
+  def constraint_params_to_mana_constraint(constraint_params)
+    sub_params = constraint_params.second
+
     {
-      white: params[:white].to_i,
-      blue: params[:blue].to_i,
-      black: params[:black].to_i,
-      red: params[:red].to_i,
-      green: params[:green].to_i,
-      colorless: params[:colorless].to_i
+      sub_params['color'].to_sym => {
+        count: sub_params['amount'].to_i,
+        turn: sub_params['turn'].to_i
+      }
     }
   end
 end

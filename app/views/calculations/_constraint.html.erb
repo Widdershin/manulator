@@ -1,21 +1,23 @@
 <div class='row'>
-  <div class='ui column'>
-    I want
-  </div>
+  <%= form.fields_for("constraint_#{id}") do |fields| %>
+    <div class='ui column'>
+      I want
+    </div>
 
-  <div class='ui column'>
-    <%= select_tag('amount', options_for_select(amounts, 0), class: 'ui dropdown column') %>
-  </div>
+    <div class='ui column'>
+      <%= fields.select('amount', options_for_select(amounts, 0), class: 'ui dropdown column') %>
+    </div>
 
-  <div class='ui column'>
-    <%= select_tag(color, options_for_select(colors, colors.first), class: 'ui dropdown column') %>
-  </div>
+    <div class='ui column'>
+      <%= fields.select('color', options_for_select(colors, colors.first), class: 'ui dropdown column') %>
+    </div>
 
-  <div class='ui column'>
-    <%= label_tag 'by_turn' %>
-  </div>
+    <div class='ui column'>
+      <%= fields.label 'by_turn' %>
+    </div>
 
-  <div class='ui column'>
-    <%= select_tag('turn', options_for_select((0..10).to_a, 0), class: 'ui dropdown column') %>
-  </div>
+    <div class='ui column'>
+      <%= fields.select('turn', options_for_select((0..10).to_a, 0), class: 'ui dropdown column') %>
+    </div>
+  <% end %>
 </div>

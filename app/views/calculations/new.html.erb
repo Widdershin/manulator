@@ -1,9 +1,9 @@
 <div class='ui main center aligned text container' id='calculation-container'>
   <h1 class='ui header'>Mana Probability Calculator</h1>
 
-  <%= form_for :calculations, class: 'ui large form' do |f| %>
+  <%= form_for :calculations, url: calculations_path, class: 'ui large form' do |f| %>
       <div id='constraints' class='ui five column doubling stackable grid container'>
-        <%= render partial: 'constraint', locals: { color: @colors.first, colors: @colors, amounts: @amounts } %>
+        <%= render partial: 'constraint', locals: { color: @colors.first, colors: @colors, amounts: @amounts, form: f, id: 0 } %>
       </div>
 
       <div class='one column row'>
@@ -14,11 +14,11 @@
       </div>
 
       <div class='one column row'>
-        <%= submit_tag 'Calculate', class: 'ui large teal submit button' %>
+        <%= f.submit 'Calculate', class: 'ui large teal submit button' %>
+      </div>
+
+      <div id='constraint-template' style='display:none'>
+        <%= render partial: 'constraint', locals: { color: @colors.first, colors: @colors, amounts: @amounts, form: f, id: 'X' } %>
       </div>
   <% end %>
-</div>
-
-<div id='constraint-template' style='display:none'>
-  <%= render partial: 'constraint', locals: { color: @colors.first, colors: @colors, amounts: @amounts } %>
 </div>

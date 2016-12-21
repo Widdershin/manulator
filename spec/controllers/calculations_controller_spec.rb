@@ -11,12 +11,29 @@ describe CalculationsController, type: :controller do
   end
 
   describe '#create' do
-    let(:requirements) { { white: 1, black: 1, red: 1, green: 0, blue: 0, colorless: 0 } }
+    let(:constraints) do
+      {
+        constraint_0: { amount: '1', color: 'green', turn: '0' },
+        constraint_1: { amount: '1', color: 'blue', turn: '0' }
+      }
+    end
 
-    before { expect(CalculateManaBase).to receive(:new).and_return(-> { [] }) }
+    let(:mana_constraints) do
+      {
+        green: { count: 1, turn: 0 },
+        blue: { count: 1, turn: 0 }
+      }
+    end
+
+    before do
+      expect(CalculateManaBase)
+        .to receive(:new)
+        .with(mana_constraints)
+        .and_return(-> { [] })
+    end
 
     it 'renders the show template with 200 Ok' do
-      post :create, params: { mana_requirements: requirements, by_turn: 3 }
+      post :create, params: { calculations: constraints }
 
       expect(response).to have_http_status(:ok)
       expect(response).to render_template(:show)
