@@ -2,6 +2,11 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-#calculation-form {
+#calculation-container {
   margin-top: 5em;
+}
+
+#add-constraint {
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
