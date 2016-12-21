@@ -2,6 +2,7 @@ class CalculationsController < ApplicationController
   COLORS = %w(white blue black red green colorless).freeze
 
   def new
+    @non_basic_lands = ManaSource.where(basic: false).all
     @colors = COLORS
     @amounts = (0..10).to_a
   end
