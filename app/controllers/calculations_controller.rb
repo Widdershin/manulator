@@ -4,7 +4,7 @@ class CalculationsController < ApplicationController
   def new
     @non_basic_lands = ManaSource.where(basic: false).all
     @colors = COLORS
-    @amounts = (0..10).to_a
+    @amounts = (1..10).to_a
   end
 
   def create
