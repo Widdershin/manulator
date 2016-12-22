@@ -15,14 +15,10 @@ class CalculateManaBase
   def initialize(mana_constraints, lands_to_consider)
     @mana_constraints = mana_constraints
     @lands_to_consider = lands_to_consider
-    @hands_checked = 0
   end
 
   def call
-    manas = successful_mana_bases.sort_by { |h| h[:probability] }.reverse!
-    p "\n\n\n hands: #{@hands.size} \n\n\n"
-    p "\n\n\n hands_checked: #{@hands_checked} \n\n\n"
-    manas
+    successful_mana_bases.sort_by { |h| h[:probability] }.reverse!
   end
 
   private
@@ -41,19 +37,24 @@ class CalculateManaBase
     end
   end
 
-  def mana_constraints
-    @mana ||= @mana_constraints
-      .map { |color, details| ManaConstraint.new(color, details[:count], details[:turn]) }
-      .sort_by { |constraint| COLORS.index(constraint.color) }
-  end
+  def mana_base_combinations
+    colors_to_sources.repeated_combination(MANA_SOURCES).map do |mana_base|
+      next if too_many_non_basics?(mana_base)
+      next if doesnt_include_required_colors?(mana_base)
+      next if too_few_sources?(mana_base)
 
-  def draws
-    @draws ||= mana_constraints.map { |constraint| constraint.turn + CARDS_IN_OPENING_HAND }.max
+      result = {}
+
+      colors_to_sources.each do |source|
+        result[source.name.to_sym] = mana_base.count(source)
+      end
+
+      result
+    end.compact
   end
 
   def possible_hands_for_mana_base(card_distribution)
     hands_with_required_mana_sources.select do |hand|
-      @hands_checked += 1
       hand.all? do |source, count|
         card_distribution[source.name.to_sym] >= count
       end
@@ -82,27 +83,6 @@ class CalculateManaBase
     @colors_to_sources ||= colors_desired.flat_map { |color| ManaSource.where(name: @lands_to_consider) }.uniq.sort_by(&:name)
   end
 
-  def mana_base_combinations
-    total_combos = colors_to_sources.repeated_combination(MANA_SOURCES)
-    p "\n\n\n total_combos: #{total_combos.size} \n\n\n"
-
-    combos = total_combos.map do |mana_base|
-      next if too_many_non_basics?(mana_base)
-      next if doesnt_include_required_colors?(mana_base)
-      next if too_few_sources?(mana_base)
-
-      result = {}
-
-      colors_to_sources.each do |source|
-        result[source.name.to_sym] = mana_base.count(source)
-      end
-
-      result
-    end.compact
-    p "\n\n\n combos: #{combos.size} \n\n\n"
-    combos
-  end
-
   def too_few_sources?(mana_base)
     mana_base.any? { |source| mana_base.count(source) <= 1 }
   end
@@ -117,6 +97,16 @@ class CalculateManaBase
         source.send(color)
       end
     end
+  end
+
+  def mana_constraints
+    @mana ||= @mana_constraints
+      .map { |color, details| ManaConstraint.new(color, details[:count], details[:turn]) }
+      .sort_by { |constraint| COLORS.index(constraint.color) }
+  end
+
+  def draws
+    @draws ||= mana_constraints.map { |constraint| constraint.turn + CARDS_IN_OPENING_HAND }.max
   end
 
   def hasherize(array)
