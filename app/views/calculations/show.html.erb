@@ -8,13 +8,9 @@
   <table class="ui celled table">
     <thead>
       <tr>
-        <th>White</th>
-        <th>Blue</th>
-        <th>Black</th>
-        <th>Red</th>
-        <th>Green</th>
-        <th>Colorless</th>
-        <th>Probability</th>
+      <% @mana_bases.flat_map(&:keys).uniq.each do |column_title| %>
+        <th><%= h column_title %></th>
+      <% end %>
       </tr>
     </thead>
     <tbody>

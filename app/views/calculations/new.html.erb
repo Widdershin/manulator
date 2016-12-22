@@ -22,9 +22,14 @@
       <div class='ui three column grid'>
         <% @non_basic_lands.each.with_index do |land, index| %>
           <div class='left aligned column'>
-            <div class='ui checkbox'>
+            <div class='ui checkbox' id="nonbasic-land-checkbox-<%= "#{land.name.downcase.delete(' ')}-#{land.colors.join('-')}" %>">
               <%= check_box_tag "non_basic_lands[]", land.name %>
-              <%= label_tag "non_basic_lands[]", land.name %>
+              <%= label_tag "non_basic_lands_#{land.name}" do  %>
+                <%= land.name %>
+                <% land.colors.each do |color| %>
+                  <%= mana_icon_for(color) %>
+                <% end %>
+              <% end %>
             </div>
           </div>
         <% end %>

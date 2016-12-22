@@ -17,11 +17,48 @@ jQuery(function($) {
     return false;
   };
 
+  var redisplayNonBasicLands = function() {
+    var colorsToKeep = [];
+    var colorSelectElements = $('[id*=_color]');
+    var allColors = ['white', 'blue', 'black', 'red', 'green', 'colorless'];
+
+    for (var i = 0, len = colorSelectElements.length; i < len; i++) {
+      colorsToKeep.push(colorSelectElements[i].value);
+    };
+
+    colorsToKeep.pop(); // Discard the template's color, which defaults to white.
+
+    for (var i = 0, len = allColors.length; i < len; i++) {
+      var color = allColors[i];
+      var element = $("[id*=" + color + "]");
+
+      if (keepColor(colorsToKeep, color)) {
+        element.show();
+        element.parent().css("display", "block");
+      } else {
+        element.hide();
+        element.parent().css("display", "none");
+      }
+    };
+  };
+
+  var keepColor = function(colorsToKeep, color) {
+    return ~colorsToKeep.indexOf(color);
+  };
+
   var watchAndUpdateConstraints = function() {
     $(document).on('click', '#add-constraint', function(e) {
       addConstraint(e);
     });
   };
 
+  var watchAndUpdateNonBasicLands = function() {
+    $(document).on('change', '[id*=_color]', function(e) {
+      redisplayNonBasicLands();
+    });
+  };
+
+
   watchAndUpdateConstraints();
+  watchAndUpdateNonBasicLands();
 });

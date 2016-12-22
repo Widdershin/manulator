@@ -15,10 +15,14 @@ class CalculateManaBase
   def initialize(mana_constraints, lands_to_consider)
     @mana_constraints = mana_constraints
     @lands_to_consider = lands_to_consider
+    @hands_checked = 0
   end
 
   def call
-    successful_mana_bases.sort_by { |h| h[:probability] }.reverse!
+    manas = successful_mana_bases.sort_by { |h| h[:probability] }.reverse!
+    p "\n\n\n hands: #{@hands.size} \n\n\n"
+    p "\n\n\n hands_checked: #{@hands_checked} \n\n\n"
+    manas
   end
 
   private
@@ -49,6 +53,7 @@ class CalculateManaBase
 
   def possible_hands_for_mana_base(card_distribution)
     hands_with_required_mana_sources.select do |hand|
+      @hands_checked += 1
       hand.all? do |source, count|
         card_distribution[source.name.to_sym] >= count
       end
@@ -78,21 +83,40 @@ class CalculateManaBase
   end
 
   def mana_base_combinations
-    colors_to_sources.repeated_combination(MANA_SOURCES).map do |combination|
-      next if too_many_non_basics?(combination)
+    total_combos = colors_to_sources.repeated_combination(MANA_SOURCES)
+    p "\n\n\n total_combos: #{total_combos.size} \n\n\n"
+
+    combos = total_combos.map do |mana_base|
+      next if too_many_non_basics?(mana_base)
+      next if doesnt_include_required_colors?(mana_base)
+      next if too_few_sources?(mana_base)
 
       result = {}
 
       colors_to_sources.each do |source|
-        result[source.name.to_sym] = combination.count(source)
+        result[source.name.to_sym] = mana_base.count(source)
       end
 
       result
     end.compact
+    p "\n\n\n combos: #{combos.size} \n\n\n"
+    combos
+  end
+
+  def too_few_sources?(mana_base)
+    mana_base.any? { |source| mana_base.count(source) <= 1 }
   end
 
   def too_many_non_basics?(mana_base)
-    mana_base.any? { |source, count| !source.basic && mana_base.count(source) > 4 }
+    mana_base.any? { |source| !source.basic && mana_base.count(source) > 4 }
+  end
+
+  def doesnt_include_required_colors?(mana_base)
+    colors_desired.any? do |color| 
+      mana_base.none? do |source|
+        source.send(color)
+      end
+    end
   end
 
   def hasherize(array)

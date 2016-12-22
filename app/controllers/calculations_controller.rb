@@ -2,18 +2,21 @@ class CalculationsController < ApplicationController
   COLORS = %w(white blue black red green colorless).freeze
 
   def new
-    @non_basic_lands = ManaSource.where(basic: false).all
+    @non_basic_lands = ManaSource.where(basic: false).alphabetized
     @colors = COLORS
-    @amounts = (0..10).to_a
+    @amounts = (1..10).to_a
   end
 
   def create
-    @mana_bases = CalculateManaBase.new(mana_constraints).call.first(10)
-
+    @mana_bases = CalculateManaBase.new(mana_constraints, lands_to_consider).call.first(10)
     render :show
   end
 
   private
+
+  def lands_to_consider
+    (params["non_basic_lands"] || []) + colors_desired.flat_map { |color| ManaSource.where(color.to_sym => true, :basic => true) }.pluck('name')
+  end
 
   def mana_constraints
     calculation_params.map do |constraint_params|
@@ -24,6 +27,12 @@ class CalculationsController < ApplicationController
   def calculation_params
     params['calculations'].delete_if do |key, _value|
       key == 'constraint_X'
+    end
+  end
+
+  def colors_desired
+    calculation_params.map do |constraint_params|
+      constraint_params.second["color"]
     end
   end
 
