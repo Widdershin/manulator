@@ -2,17 +2,29 @@ jQuery(function($) {
   var addConstraint = function(e) {
     var template = $('[id=constraint-template]').clone();
     var newConstraint = template[0].children[0];
-    var newIndex = $('[id=constraints]').children().length;
+    var d = new Date();
+    var newIndex = d.getTime();
+
+    newConstraint.id = 'constraint-' + newIndex;
 
     newConstraint.children[1].children[0].id = 'calculations_constraint_' + newIndex + '_amount';
     newConstraint.children[2].children[0].id = 'calculations_constraint_' + newIndex + '_color';
     newConstraint.children[4].children[0].id = 'calculations_constraint_' + newIndex + '_turn';
+    newConstraint.children[5].children[0].id = 'remove-constraint-' + newIndex;
 
     newConstraint.children[1].children[0].name = 'calculations[constraint_' + newIndex + '][amount]';
     newConstraint.children[2].children[0].name = 'calculations[constraint_' + newIndex + '][color]';
     newConstraint.children[4].children[0].name = 'calculations[constraint_' + newIndex + '][turn]';
 
     $('[id=constraints]')[0].appendChild(newConstraint);
+
+    return false;
+  };
+
+  var removeConstraint = function(e) {
+    var constraintIndex = e.currentTarget.id.match(/-(\d+)$/)[1];;
+
+    $("[id=constraint-" + constraintIndex + "]").remove();
 
     return false;
   };
@@ -49,6 +61,12 @@ jQuery(function($) {
   var watchAndUpdateConstraints = function() {
     $(document).on('click', '#add-constraint', function(e) {
       addConstraint(e);
+      redisplayNonBasicLands();
+    });
+
+    $(document).on('click', 'button[id*=remove-constraint]', function(e) {
+      removeConstraint(e);
+      redisplayNonBasicLands();
     });
   };
 

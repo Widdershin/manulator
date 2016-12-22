@@ -3,7 +3,7 @@
   <%= form_for :calculations, url: calculations_path, class: 'ui large form' do |f| %>
     <div class='ui center aligned text container'>
       <h1 class='ui header'>Mana Probability Calculator</h1>
-      <div id='constraints' class='ui five column doubling stackable grid container'>
+      <div id='constraints' class='ui six column doubling stackable grid container'>
         <%= render partial: 'constraint', locals: { color: @colors.first, colors: @colors, amounts: @amounts, form: f, id: 0 } %>
       </div>
 
