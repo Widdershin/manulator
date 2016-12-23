@@ -1,7 +1,7 @@
 <tr>
   <% mana_base.each do |key, value| %>
     <% if key == :probability %>
-      <td><div class='ui ribbon label'><%= value %></div></td>
+      <td><div class='ui ribbon label'><%= value %>%</div></td>
       <% else %>
       <td> <%= value %> </td>
     <% end %>
