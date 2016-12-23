@@ -7,14 +7,16 @@ jQuery(function($) {
 
     newConstraint.id = 'constraint-' + newIndex;
 
-    newConstraint.children[1].children[0].id = 'calculations_constraint_' + newIndex + '_amount';
-    newConstraint.children[2].children[0].id = 'calculations_constraint_' + newIndex + '_color';
-    newConstraint.children[4].children[0].id = 'calculations_constraint_' + newIndex + '_turn';
-    newConstraint.children[5].children[0].id = 'remove-constraint-' + newIndex;
+    newConstraint.children[1].children[0].id = 'calculations_constraint_' + newIndex + '_quantifier';
+    newConstraint.children[2].children[0].id = 'calculations_constraint_' + newIndex + '_amount';
+    newConstraint.children[3].children[0].id = 'calculations_constraint_' + newIndex + '_color';
+    newConstraint.children[5].children[0].id = 'calculations_constraint_' + newIndex + '_turn';
+    newConstraint.children[6].children[0].id = 'remove-constraint-' + newIndex;
 
-    newConstraint.children[1].children[0].name = 'calculations[constraint_' + newIndex + '][amount]';
-    newConstraint.children[2].children[0].name = 'calculations[constraint_' + newIndex + '][color]';
-    newConstraint.children[4].children[0].name = 'calculations[constraint_' + newIndex + '][turn]';
+    newConstraint.children[1].children[0].name = 'calculations[constraint_' + newIndex + '][quantifier]';
+    newConstraint.children[2].children[0].name = 'calculations[constraint_' + newIndex + '][amount]';
+    newConstraint.children[3].children[0].name = 'calculations[constraint_' + newIndex + '][color]';
+    newConstraint.children[5].children[0].name = 'calculations[constraint_' + newIndex + '][turn]';
 
     $('[id=constraints]')[0].appendChild(newConstraint);
 

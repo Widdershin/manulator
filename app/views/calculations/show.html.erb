@@ -1,20 +1,22 @@
 <div class='ui main text container' id='calculation-form'>
   <h1 class='ui header'>Manabases calculated</h1>
 
-  <p>You asked for <%= @requirement_description %> by turn <%= @turn %></p>
+  <% if @mana_bases.empty? %>
+    <p>Sorry, we couldn't find any mana bases that met your constraints.</p>
+  <% else %>
+    <p>The following mana configurations are the most optimal for your requirements:</p>
 
-  <p>The following mana configurations are the most optimal for your requirements:</p>
-
-  <table class="ui celled table">
-    <thead>
-      <tr>
-      <% @mana_bases.flat_map(&:keys).uniq.each do |column_title| %>
-        <th><%= h column_title %></th>
-      <% end %>
-      </tr>
-    </thead>
-    <tbody>
-      <%= render partial: 'mana_base', collection: @mana_bases %>
-    </tbody>
-  </table>
+    <table class="ui celled table">
+      <thead>
+        <tr>
+        <% @mana_bases.flat_map(&:keys).uniq.each do |column_title| %>
+          <th><%= h column_title %></th>
+        <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <%= render partial: 'mana_base', collection: @mana_bases %>
+      </tbody>
+    </table>
+  <% end %>
 </div>

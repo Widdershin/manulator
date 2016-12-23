@@ -1,6 +1,8 @@
 class CalculationsController < ApplicationController
   COLORS = %w(white blue black red green colorless).freeze
 
+  ManaConstraint = Struct.new(:color, :count, :quantifier, :turn)
+
   def new
     @non_basic_lands = ManaSource.where(basic: false).alphabetized
     @colors = COLORS
@@ -21,7 +23,7 @@ class CalculationsController < ApplicationController
   def mana_constraints
     calculation_params.map do |constraint_params|
       constraint_params_to_mana_constraint(constraint_params)
-    end.reduce({}, :merge)
+    end.sort_by { |constraint| COLORS.index(constraint.color) }
   end
 
   def calculation_params
@@ -39,11 +41,11 @@ class CalculationsController < ApplicationController
   def constraint_params_to_mana_constraint(constraint_params)
     sub_params = constraint_params.second
 
-    {
-      sub_params['color'].to_sym => {
-        count: sub_params['amount'].to_i,
-        turn: sub_params['turn'].to_i
-      }
-    }
+    ManaConstraint.new(
+      sub_params['color'].to_sym,
+      sub_params['amount'].to_i,
+      sub_params['quantifier'],
+      sub_params['turn'].to_i
+    )
   end
 end

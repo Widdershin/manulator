@@ -9,7 +9,6 @@ class CalculateManaBase
   CONFIDENCE = 30 # percent
   CARDS_IN_OPENING_HAND = 7
 
-  ManaConstraint = Struct.new(:color, :count, :turn)
   NonSource = Struct.new(:white, :blue, :black, :red, :green, :colorless, :name, :basic)
 
   def initialize(mana_constraints, lands_to_consider)
@@ -29,6 +28,7 @@ class CalculateManaBase
 
       mhd = MHD.new(distribution: card_distribution)
 
+      #maybe pruning the hands to will solve the "at least" vs "no more than" constraints
       probability = possible_hands_for_mana_base(card_distribution).sum do |hand|
         p_hand = mhd.call(amounts_desired: hand.values, draws: draws)
       end * 100
@@ -39,7 +39,7 @@ class CalculateManaBase
 
   def mana_base_combinations
     colors_to_sources.repeated_combination(MANA_SOURCES).map do |mana_base|
-      next if too_many_non_basics?(mana_base)
+      next if maximize_non_basics?(mana_base)
       next if doesnt_include_required_colors?(mana_base)
       next if too_few_sources?(mana_base)
 
@@ -71,7 +71,15 @@ class CalculateManaBase
 
   def satisfies_mana_requirements?(hand)
     mana_constraints.all? do |constraint|
-      hand.count { |source| source.send(constraint.color) } >= constraint.count
+      case constraint.quantifier
+      when "at least"
+        hand.count { |source| source.send(constraint.color) } >= constraint.count
+      when "exactly"
+        hand.count { |source| source.send(constraint.color) } == constraint.count
+      when "no more than"
+        hand.count { |source| source.send(constraint.color) } <= constraint.count
+      else
+      end
     end
   end
 
@@ -87,6 +95,10 @@ class CalculateManaBase
     mana_base.any? { |source| mana_base.count(source) <= 1 }
   end
 
+  def maximize_non_basics?(mana_base)
+    mana_base.any? { |source| !source.basic && mana_base.count(source) != 4 }
+  end
+
   def too_many_non_basics?(mana_base)
     mana_base.any? { |source| !source.basic && mana_base.count(source) > 4 }
   end
@@ -97,12 +109,6 @@ class CalculateManaBase
         source.send(color)
       end
     end
-  end
-
-  def mana_constraints
-    @mana ||= @mana_constraints
-      .map { |color, details| ManaConstraint.new(color, details[:count], details[:turn]) }
-      .sort_by { |constraint| COLORS.index(constraint.color) }
   end
 
   def draws

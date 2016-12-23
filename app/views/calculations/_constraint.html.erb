@@ -5,6 +5,10 @@
     </div>
 
     <div class='ui column'>
+      <%= fields.select('quantifier', options_for_select(["at least", "exactly", "no more than"], "at least"), class: 'ui dropdown column') %>
+    </div>
+
+    <div class='ui column'>
       <%= fields.select('amount', options_for_select(amounts, 0), class: 'ui dropdown column') %>
     </div>
 
