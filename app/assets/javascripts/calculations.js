@@ -4,19 +4,23 @@ jQuery(function($) {
     var newConstraint = template[0].children[0];
     var d = new Date();
     var newIndex = d.getTime();
+    var idIdentifiers = [
+      'quantifier',
+      'amount',
+      'color',
+      'turn'
+    ]
 
     newConstraint.id = 'constraint-' + newIndex;
 
-    newConstraint.children[1].children[0].id = 'calculations_constraint_' + newIndex + '_quantifier';
-    newConstraint.children[2].children[0].id = 'calculations_constraint_' + newIndex + '_amount';
-    newConstraint.children[3].children[0].id = 'calculations_constraint_' + newIndex + '_color';
-    newConstraint.children[5].children[0].id = 'calculations_constraint_' + newIndex + '_turn';
-    newConstraint.children[6].children[0].id = 'remove-constraint-' + newIndex;
+    idIdentifiers.forEach(setIdentifier)
 
-    newConstraint.children[1].children[0].name = 'calculations[constraint_' + newIndex + '][quantifier]';
-    newConstraint.children[2].children[0].name = 'calculations[constraint_' + newIndex + '][amount]';
-    newConstraint.children[3].children[0].name = 'calculations[constraint_' + newIndex + '][color]';
-    newConstraint.children[5].children[0].name = 'calculations[constraint_' + newIndex + '][turn]';
+    function setIdentifier(identifier, index) {
+      $(newConstraint).find('[id*=_' + identifier + ']')[0].id = 'calculations_constraint_' + newIndex + '_' + identifier;
+      $(newConstraint).find('[id*=_' + identifier + ']')[0].name = 'calculations[constraint_' + newIndex + '][' + identifier + ']';
+    }
+
+    $(newConstraint).find('[id*=remove-constraint-]')[0].id = 'remove-constraint-' + newIndex;
 
     $('[id=constraints]')[0].appendChild(newConstraint);
 
