@@ -39,6 +39,7 @@ class CalculateManaBase
 
   def mana_base_combinations
     colors_to_sources.repeated_combination(MANA_SOURCES).map do |mana_base|
+      next if too_many_non_basics?(mana_base)
       next if maximize_non_basics?(mana_base)
       next if doesnt_include_required_colors?(mana_base)
       next if too_few_sources?(mana_base)
@@ -96,7 +97,7 @@ class CalculateManaBase
   end
 
   def maximize_non_basics?(mana_base)
-    mana_base.any? { |source| !source.basic && mana_base.count(source) != 4 }
+    mana_base.any? { |source| !source.basic && mana_base.count(source) != 4 } && mana_base.none? { |source| !source.basic }
   end
 
   def too_many_non_basics?(mana_base)
