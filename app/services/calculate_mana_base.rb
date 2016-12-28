@@ -89,7 +89,7 @@ class CalculateManaBase
   end
 
   def colors_to_sources
-    @colors_to_sources ||= colors_desired.flat_map { |color| ManaSource.where(name: @lands_to_consider) }.uniq.sort_by(&:name)
+    @colors_to_sources ||= colors_desired.flat_map { |color| ManaSource.where(multiverse_id: @lands_to_consider) }.uniq.sort_by(&:name)
   end
 
   def too_few_sources?(mana_base)

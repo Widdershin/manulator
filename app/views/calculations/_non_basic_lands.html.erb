@@ -4,10 +4,10 @@
   <div class='ui four column grid'>
     <% lands.each.with_index do |land, index| %>
       <div class='left aligned column'>
-        <div class="item" id="nonbasic-land-checkbox-<%= "#{land.name.downcase.delete(' ')}-#{land.colors.join('-')}" %>">
-          <%= label_tag "non_basic_lands_#{land.name}" do  %>
-            <%= check_box_tag "non_basic_lands[]", land.name, false, 
-              {id: "non_basic_lands_#{land.name.gsub(' ', '_')}", class: 'hidden'}%>
+        <div class="item" id="nonbasic-land-checkbox-<%= "#{land.multiverse_id}-#{land.colors.join('-')}" %>">
+          <%= label_tag "non_basic_lands_#{land.multiverse_id}" do  %>
+            <%= check_box_tag "non_basic_lands[]", land.multiverse_id, false,
+              {id: "non_basic_lands_#{land.multiverse_id}", class: 'hidden'}%>
 
             <div class="ui image">
             

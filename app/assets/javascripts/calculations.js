@@ -39,6 +39,7 @@ jQuery(function($) {
     var colorsToKeep = [];
     var colorSelectElements = $('[id*=_color]');
     var allColors = ['white', 'blue', 'black', 'red', 'green', 'colorless'];
+    var elements = $('.items [id*=nonbasic-land-checkbox]');
 
     for (var i = 0, len = colorSelectElements.length; i < len; i++) {
       colorsToKeep.push(colorSelectElements[i].value);
@@ -46,16 +47,19 @@ jQuery(function($) {
 
     colorsToKeep.pop(); // Discard the template's color, which defaults to white.
 
+
+    elements.hide();
+    elements.parent().css("display", "none");
+
     for (var i = 0, len = allColors.length; i < len; i++) {
       var color = allColors[i];
-      var element = $("[id*=" + color + "]");
+      elements = $("[id*=" + color + "]");
 
       if (keepColor(colorsToKeep, color)) {
-        element.show();
-        element.parent().css("display", "block");
-      } else {
-        element.hide();
-        element.parent().css("display", "none");
+        console.log(elements);
+
+        elements.show();
+        elements.parent().css("display", "block");
       }
     };
   };

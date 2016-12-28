@@ -1,5 +1,5 @@
 class PopulateManaSourcesWithMultiverseId < ActiveRecord::Migration[5.0]
-  def up
+  def change
     transaction do
       sources = ManaSource.all
 
@@ -11,14 +11,6 @@ class PopulateManaSourcesWithMultiverseId < ActiveRecord::Migration[5.0]
         unless source.save
           puts "\n\n******\n\nFailed to save mana source: #{source.name} because: #{source.errors.full_messages}\n\n******\n\n"
         end
-      end
-    end
-  end
-
-  def down
-    ManaSource.where(basic: false).map do |ms|
-      unless ms.destroy
-        puts "\n\n******\n\nFailed to destroy mana source: #{ms.name} because: #{ms.errors.full_messages}\n\n******\n\n"
       end
     end
   end

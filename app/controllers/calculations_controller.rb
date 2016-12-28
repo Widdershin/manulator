@@ -17,7 +17,7 @@ class CalculationsController < ApplicationController
   private
 
   def lands_to_consider
-    (params["non_basic_lands"] || []) + colors_desired.flat_map { |color| ManaSource.where(color.to_sym => true, :basic => true) }.pluck('name')
+    (params["non_basic_lands"] || []) + colors_desired.flat_map { |color| ManaSource.where(color.to_sym => true, :basic => true) }.pluck('multiverse_id')
   end
 
   def mana_constraints
