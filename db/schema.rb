@@ -10,24 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161220210938) do
+ActiveRecord::Schema.define(version: 20161228003248) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "mana_sources", force: :cascade do |t|
-    t.string   "name",                       null: false
-    t.boolean  "basic",      default: false, null: false
-    t.boolean  "white",      default: false, null: false
-    t.boolean  "blue",       default: false, null: false
-    t.boolean  "black",      default: false, null: false
-    t.boolean  "red",        default: false, null: false
-    t.boolean  "green",      default: false, null: false
-    t.boolean  "colorless",  default: false, null: false
-    t.boolean  "etb_tapped", default: false, null: false
-    t.datetime "created_at",                 null: false
-    t.datetime "updated_at",                 null: false
+    t.string   "name",                          null: false
+    t.boolean  "basic",         default: false, null: false
+    t.boolean  "white",         default: false, null: false
+    t.boolean  "blue",          default: false, null: false
+    t.boolean  "black",         default: false, null: false
+    t.boolean  "red",           default: false, null: false
+    t.boolean  "green",         default: false, null: false
+    t.boolean  "colorless",     default: false, null: false
+    t.boolean  "etb_tapped",    default: false, null: false
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
     t.string   "mtg_api_id"
+    t.integer  "multiverse_id"
+    t.string   "image_url"
   end
 
 end

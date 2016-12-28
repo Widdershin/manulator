@@ -1,0 +1,21 @@
+<h3 class='ui header center aligned column'>Choose Nonbasics</h1>
+
+<div class="ui items">
+  <div class='ui four column grid'>
+    <% lands.each.with_index do |land, index| %>
+      <div class='left aligned column'>
+        <div class="item" id="nonbasic-land-checkbox-<%= "#{land.name.downcase.delete(' ')}-#{land.colors.join('-')}" %>">
+          <%= label_tag "non_basic_lands_#{land.name}" do  %>
+            <%= check_box_tag "non_basic_lands[]", land.name, false, 
+              {id: "non_basic_lands_#{land.name.gsub(' ', '_')}", class: 'hidden'}%>
+
+            <div class="ui image">
+            
+              <img src=<%= land.image_url %>>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
