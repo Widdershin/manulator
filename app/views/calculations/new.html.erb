@@ -1,0 +1,49 @@
+<div class='ui main container' id='calculation-container'>
+    <h1 class='ui header center aligned column'>Manabase Construction</h1>
+
+  <%= form_for :calculations, url: calculations_path, class: 'ui large form' do |f| %>
+    <div class="ui two column grid">
+      <div class="center aligned column">
+        <div id='constraints' class='ui seven column doubling stackable grid container'>
+          <%= render partial: 'constraint', locals: { color: @colors.first, colors: @colors, amounts: @amounts, form: f, id: 0 } %>
+        </div>
+
+        <div class='one column row'>
+          <%= button_tag(type: 'button', id: 'add-constraint', class: 'ui labeled icon button') do %>
+            <i class="plus icon"></i>
+            Add constraint
+          <% end %>
+        </div>
+
+        <div class='one column row'>
+          <%= f.submit 'Calculate', id: 'submit-calculation', class: 'ui large teal submit button' %>
+        </div>
+      </div>
+
+      <div class="center aligned column">
+        <h3 class='ui header center aligned column'>Choose Nonbasics</h1>
+
+        <div class='ui three column grid'>
+          <% @non_basic_lands.each.with_index do |land, index| %>
+            <div class='left aligned column'>
+              <div class='ui checkbox' id="nonbasic-land-checkbox-<%= "#{land.name.downcase.delete(' ')}-#{land.colors.join('-')}" %>">
+                <%= check_box_tag "non_basic_lands[]", land.name %>
+                <%= label_tag "non_basic_lands_#{land.name}" do  %>
+                  <%= land.name %>
+                  <% land.colors.each do |color| %>
+                    <%= mana_icon_for(color) %>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+
+    <div id='constraint-template' style='display:none'>
+      <%= render partial: 'constraint', locals: { color: @colors.first, colors: @colors, amounts: @amounts, form: f, id: 'X' } %>
+    </div>
+  <% end %>
+</div>

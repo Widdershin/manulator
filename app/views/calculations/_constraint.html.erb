@@ -1,0 +1,38 @@
+<div class='row' id="constraint-<%= id %>">
+  <%= form.fields_for("constraint_#{id}") do |fields| %>
+    <div class="ui form">
+      <div class="fields">
+
+        <div class="field">
+          <%= fields.label('i_want', 'I want') %>
+        </div>
+
+        <div class="field">
+          <%= fields.select('quantifier', options_for_select(["at least", "exactly", "no more than"], "at least"), {}, class: 'ui compact selection dropdown') %>
+        </div>
+
+        <div class="field">
+          <%= fields.select('amount', options_for_select(amounts, 0), {}, class: 'ui compact selection dropdown') %>
+        </div>
+
+        <div class="field">
+          <%= fields.select('color', options_for_select(colors, colors.first), {}, class: 'ui compact selection dropdown') %>
+        </div>
+
+        <div class="field">
+          <%= fields.label('by_turn', 'by turn') %>
+        </div>
+
+        <div class="field">
+          <%= fields.select('turn', options_for_select((0..10).to_a, 0), {}, class: 'ui compact selection dropdown') %>
+        </div>
+
+        <div class="field">
+          <%= button_tag(type: 'button', id: "remove-constraint-#{id}", class: 'ui compact icon button') do %>
+            <i class="icon remove"></i>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
